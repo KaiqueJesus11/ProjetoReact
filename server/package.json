@@ -4,7 +4,8 @@
   "description": "projeto-final-react-Server",
   "main": "loader.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./node_modules\nodemon\bin\nodemon.js"
   },
   "repository": {
     "type": "git",
