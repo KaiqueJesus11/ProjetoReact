@@ -1,10 +1,19 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
-import {alteraData, alteraNome, alteraEmail, alteraAssunto} from '../../../actions/contatoAction';
+import {alteraData, alteraNome, alteraEmail, alteraAssunto, adicionaContato} from '../../../actions/contatoAction';
 
 
 class FormContato extends Component {
+    adicionar =function(e){
+        e.preventDefault();
+        this.props.adicionaContato(
+        this.props.data,
+        this.props.nome,
+        this.props.email,
+        this.props.assunto)
+        alert("Contato adicionado com sucesso!")
+    }
     render() {
         return (<div>
                 <h3 className="border-bottom">Formulario</h3>
@@ -50,7 +59,8 @@ class FormContato extends Component {
                         </div>
                     </div>
                     <div className="form-group row">
-                        <button className="btn btn-primary ml-3 mb-3">
+                        <button className="btn btn-primary ml-3 mb-3"
+                        onClick={this.adicionar.bind(this)}>
                             Adicionar
 </button>
                     </div>
@@ -63,14 +73,16 @@ const  mapStateToProps = state => ({
   data : state.contato.data,
   nome : state.contato.nome,
   email : state.contato.email,
-  assunto : state.contato.assunto
+  assunto : state.contato.assunto,
+  adicionaContato : state.contato.adicionaContato
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     alteraData,
     alteraNome,
     alteraEmail,
-    alteraAssunto
+    alteraAssunto,
+    adicionaContato,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormContato)
