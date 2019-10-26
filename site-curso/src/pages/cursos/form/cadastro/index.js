@@ -8,13 +8,19 @@ const URL = "http://localhost:3200/api/curso"
 
 export default class Cadastro extends React.Component {
 
-    state = {
+    initialstate = {
         data: [],
+        _id : '',
         codigo: 0,
         descricao: '',
         cargaHoraria: 0,
         preco: 0.0,
         categoria: 'REDES'
+    }
+
+    constructor(props){
+        super(props)
+        this.state = this.initialstate;
     }
 
     componentWillMount() {
@@ -28,52 +34,55 @@ export default class Cadastro extends React.Component {
     adicionarCurso(e) {
         console.log('inicio adicionarCurso')
         e.preventDefault();
-        const codigo = this.state.codigo;
-        const descricao = this.state.descricao;
-        const cargaHoraria = this.state.cargaHoraria;
-        const preco = this.state.preco;
-        const categoria = this.state.categoria;
-
+        const {_id, codigo, descricao, cargaHoraria, preco, categoria} = this.state;
         const body = { codigo, descricao, cargaHoraria, preco, categoria }
 
-        console.log(body)
-        axios.post(URL, body)
+        if(_id && _id.trim() !== ' '){
+            axios.put(`${URL}/${_id}`, body)
             .then(_ => {
-                alert("Curso adicionado");
-                this.listar();
-                this.setState({codigo: 0,
-                    descricao: '',
-                    cargaHoraria: 0,
-                    preco: 0.0,
-                    categoria: 'REDES'})
-        }).catch(error => {
-            const cargaHoraria =  error.response.data.errors.cargaHoraria
-            const codigo =  error.response.data.errors.codigo
-            const preco =  error.response.data.errors.preco
-            const descricao =  error.response.data.errors.descricao
-            const categoria =  error.response.data.errors.categoria
+                this.callbackSucess('Curso atualizado')
+        }).catch(this.callbackError);
+        }else{
+            axios.post(URL, body)
+            .then(_ => {
+                this.callbackSucess('Curso adicionado')
+        }).catch(this.callbackError);
+        }
+    }
 
-            var texto = ''
+    callbackSucess  = function(msg){
+        alert(msg)
+        this.setState(this.initialstate)
+        this.listar()
+    }
 
-            if(cargaHoraria){
-                texto += 'Carga horária Inválida\n'
-            }
+    callbackError = function(error){
+        const cargaHoraria =  error.response.data.errors.cargaHoraria
+        const codigo =  error.response.data.errors.codigo
+        const preco =  error.response.data.errors.preco
+        const descricao =  error.response.data.errors.descricao
+        const categoria =  error.response.data.errors.categoria
 
-            if(codigo){
-                texto += 'Código Inválido\n'
-            }
+        var texto = ''
 
-            if(preco){
-                texto += 'Preço Inválido\n'
-            }
-            if(descricao){
-                texto += 'Descrição Inválida\n'
-            }
-            if(categoria){
-                texto += 'Categoria Inválida\n'
-            }
-            alert(texto)
-        });
+        if(cargaHoraria){
+            texto += 'Carga horária Inválida\n'
+        }
+
+        if(codigo){
+            texto += 'Código Inválido\n'
+        }
+
+        if(preco){
+            texto += 'Preço Inválido\n'
+        }
+        if(descricao){
+            texto += 'Descrição Inválida\n'
+        }
+        if(categoria){
+            texto += 'Categoria Inválida\n'
+        }
+        alert(texto)
     }
 
     alteraCampos = function (target) {
@@ -110,6 +119,15 @@ export default class Cadastro extends React.Component {
         }
     }
 
+    consultarCurso = function(curso){
+        this.setState({...this.state,_id: curso._id,
+                                     codigo: curso.codigo,
+                                     preco: curso.preco,
+                                     categoria: curso.categoria,
+                                     cargaHoraria : curso.cargaHoraria,
+                                     descricao : curso.descricao})
+    }
+
     render() {
         return (
             <div className="row border-bottom">
@@ -121,11 +139,14 @@ export default class Cadastro extends React.Component {
                         preco={this.state.preco}
                         categoria={this.state.categoria}
                         adicionarCurso={this.adicionarCurso.bind(this)}
+                        textoBotao = {this.state._id && this.state._id !== '' ? 'Atualizar': 'Adicionar'}
                     />
                 </div>
                 <div className="col-md-6">
                     <CursoList batatas={this.state.data}
-                     removerCurso={this.removerCurso.bind(this)} />
+                     removerCurso={this.removerCurso.bind(this)} 
+                     consultarCurso={this.consultarCurso.bind(this)} 
+                     />
                 </div>
             </div>
         )
