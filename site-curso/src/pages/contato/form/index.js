@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux';
 import {alteraData, alteraNome, alteraEmail, alteraAssunto, adicionaContato} from '../../../actions/contatoAction';
-
-
 class FormContato extends Component {
     adicionar =function(e){
         e.preventDefault();
